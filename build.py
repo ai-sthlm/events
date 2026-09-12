@@ -94,8 +94,9 @@ def render_event(event: dict[str, object]) -> str:
         location += ", " + esc(event["address"])
     tags = "".join(f"<li>{esc(tag)}</li>" for tag in event["tags_list"])
     description = f"<p>{esc(event['description'])}</p>" if event.get("description") else ""
-    return f'''<article><h2><a href="{esc(event['url'])}">{esc(event['title'])}</a></h2>
-<p class="when">{when}</p><p>{location}</p>{description}<ul class="tags">{tags}</ul></article>'''
+    return f'''<article class="event"><div class="date-tile" aria-hidden="true"><span>{start.strftime('%b')}</span><strong>{start.day:02d}</strong><span>{start.year}</span></div>
+<div class="event-details"><p class="when">{when}</p><h3><a href="{esc(event['url'])}">{esc(event['title'])} <span aria-hidden="true">↗</span></a></h3>
+<p>{location}</p>{description}<ul class="tags">{tags}</ul></div></article>'''
 
 
 def build(check_only: bool = False) -> None:
@@ -123,7 +124,7 @@ def build(check_only: bool = False) -> None:
     try:
         shutil.copyfile(STYLESHEET, OUTPUT / "style.css")
     except OSError as exc:
-        raise ValueError(f"could not copy {STYLESHEET.relative_to(ROOT)}: {exc}") from exc
+        raise ValueError(f"could not copy a site asset: {exc}") from exc
     print(f"Built {OUTPUT / 'index.html'} from {len(events)} event(s).")
 
 

@@ -34,6 +34,8 @@ python3 build.py
 
 The second command writes the disposable preview to `dist/index.html`.
 
+Shared images are maintained and published in [ai-sthlm/assets](https://github.com/ai-sthlm/assets). The stylesheet loads the skyline from its GitHub Pages URL; images are not bundled into this site's build.
+
 For a local preview, run `make serve` and open <http://localhost:8000>. This uses Python’s built-in HTTP server.
 
 ## Constraints

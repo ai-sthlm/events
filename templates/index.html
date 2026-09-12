@@ -8,13 +8,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1>AI events in Stockholm</h1>
-    <p>A community-maintained calendar of talks, meetups, workshops, and conferences.</p>
-  </header>
-  <main>
-    $EVENTS
-  </main>
-  <footer><p>Want to add an event? Open a pull request.</p></footer>
+  <div class="shell">
+    <nav class="masthead" aria-label="Main navigation"><span class="brand">AI STHLM<span aria-hidden="true"> ·</span></span><a class="add-event" href="https://github.com/ai-sthlm/events/blob/HEAD/events/README.md">Add event ↗</a></nav>
+    <header class="hero">
+      <p class="eyebrow">The Stockholm AI community</p>
+      <h1>Events</h1>
+      <p class="intro">Meet the people shaping AI in Stockholm.</p>
+    </header>
+    <main>
+      <h2 class="section-label">On the calendar</h2>
+      $EVENTS
+    </main>
+    <footer><span>AI STHLM / Events</span><span>Built around the community.</span></footer>
+  </div>
 </body>
 </html>
