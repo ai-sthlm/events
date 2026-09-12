@@ -1,0 +1,57 @@
+# AI events in Stockholm
+
+A small, public calendar for AI-related events in Stockholm: meetups, talks, workshops, hack nights, courses, and conferences. The repository is the source of truth. Every event is proposed in a pull request, reviewed in plain text, and published as static HTML through GitHub Pages.
+
+## Scope
+
+The calendar covers public AI events held in the Stockholm area, plus online events that are explicitly intended for the Stockholm AI community. It is a continuously maintained best-effort calendar, not an authoritative listing. Organizers remain responsible for the details, registration, and any changes or cancellations.
+
+## What we record
+
+Each listing has a title, local start time, venue, canonical event URL, and—when supplied—an end time, street address, tags, and short description. Time is recorded with an ISO 8601 UTC offset so an event remains unambiguous across daylight saving time.
+
+## Directory structure
+
+```
+events/YYYY/MM/DD/   # one submitted event per .yaml or .md file
+  README.md           # data format and example
+build.py              # standard-library validator and static-site generator
+templates/index.html  # trusted page shell; uses the $EVENTS placeholder
+templates/style.css   # stylesheet copied unchanged to dist/style.css
+dist/                 # generated site, not committed
+```
+
+## Contributing
+
+Add one file per event under [`events/`](events/). Files can be a constrained `.yaml` record or a Markdown record with front matter; see the [event-data guide](events/README.md) for the exact format. The validation step runs on every pull request. A merge to the default branch (`main` or `master`) generates `dist/index.html` and deploys it to GitHub Pages.
+
+Run the same checks locally with only a standard Python installation:
+
+```sh
+python3 build.py --check
+python3 build.py
+```
+
+The second command writes the disposable preview to `dist/index.html`.
+
+For a local preview, run `make serve` and open <http://localhost:8000>. This uses Python’s built-in HTTP server.
+
+## Constraints
+
+- The generator uses Python 3.12 and the standard library only: no packages, JavaScript build step, database, or hosted CMS.
+- `templates/index.html` is a trusted site template. The builder replaces its sole `$EVENTS` placeholder with escaped event cards; do not add other `$` placeholders.
+- Event files are deliberately a **small flat YAML subset**, not general YAML. This makes dependency-free validation possible. Keep every value on one line and follow the format in `events/README.md`.
+- Submit events with a public HTTPS registration/details link and a start time that includes a UTC offset. Use the local Stockholm offset applicable on the event date (`+01:00` or `+02:00`).
+- One event per file. Use `events/YYYY/MM/DD/short-event-name.yaml`, with directories matching the local `start` date, and do not edit unrelated event records.
+- The site copies submitted descriptions as plain text; HTML and Markdown formatting are intentionally not rendered.
+- GitHub Pages must be enabled in repository settings with **GitHub Actions** as its source before deployment can publish.
+
+## Inclusion and verification
+
+1. Add events only after confirming them on the organizer’s official site or registration page.
+2. Prefer the organizer’s own URL for details, registration, location, and schedule.
+3. Use the announced local time and confirm the relevant Stockholm offset (`+01:00` or `+02:00`).
+4. Update or remove an event when the organizer changes its details or cancels it.
+5. If a lead cannot yet be verified, do not add it to the published calendar.
+
+The automated check validates format and safety constraints; maintainers verify real-world details and relevance during review.
