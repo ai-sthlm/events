@@ -59,7 +59,7 @@ jobs:
               sys.exit(0)
 
           for filename in event_paths:
-              event = event_from(Path(filename))
+              event = event_from(Path(filename).resolve())
               message = "New Stockholm AI event 🎉\n\n" + "\n".join(
                   str(event[field]) for field in ("title", "start", "venue", "url")
               )
