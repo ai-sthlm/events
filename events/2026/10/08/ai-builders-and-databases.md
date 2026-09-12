@@ -1,6 +1,6 @@
 ---
 title: AI Builders and Databases
-start: 2026-10-08T18:30:00+02:00
+time: 18:30
 venue: Mentimeter AB
 address: Tulegatan 11, Stockholm
 organizer: ClickHouse Stockholm User Group

@@ -11,12 +11,15 @@ import sys
 from pathlib import Path
 from string import Template
 from urllib.parse import urlparse
+from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parent
 EVENTS, OUTPUT, TEMPLATE, STYLESHEET = ROOT / "events", ROOT / "dist", ROOT / "templates" / "index.html", ROOT / "templates" / "style.css"
-REQUIRED = ("title", "start", "venue", "url")
-ALLOWED = set(REQUIRED) | {"end", "address", "organizer", "tags"}
+REQUIRED = ("title", "time", "venue", "url")
+ALLOWED = set(REQUIRED) | {"address", "organizer", "tags"}
 KEY = re.compile(r"^([a-z]+):[ ]*(.*)$")
+TIME_INTERVAL = re.compile(r"^(\d{2}:\d{2})(?:\s*[–-]\s*(\d{2}:\d{2}))?$")
+STOCKHOLM = ZoneInfo("Europe/Stockholm")
 
 
 def parse_fields(text: str, path: Path) -> dict[str, str]:
@@ -53,19 +56,24 @@ def event_from(path: Path) -> dict[str, object]:
     missing = set(REQUIRED) - fields.keys()
     if missing:
         raise ValueError("missing " + ", ".join(sorted(missing)))
-    try:
-        start = dt.datetime.fromisoformat(fields["start"])
-        end = dt.datetime.fromisoformat(fields["end"]) if "end" in fields else None
-    except ValueError as exc:
-        raise ValueError("start/end must be ISO 8601 date-times") from exc
-    if start.tzinfo is None or (end and end.tzinfo is None):
-        raise ValueError("start/end must include a UTC offset")
-    if end and end <= start:
-        raise ValueError("end must be after start")
-    expected_path = (f"{start.year:04d}", f"{start.month:02d}", f"{start.day:02d}")
     actual_path = path.relative_to(EVENTS).parts[:3]
-    if actual_path != expected_path:
-        raise ValueError("path must begin with the start date: " + "/".join(expected_path))
+    if len(actual_path) != 3:
+        raise ValueError("path must begin with a date: YYYY/MM/DD")
+    try:
+        date = dt.date.fromisoformat("-".join(actual_path))
+    except ValueError as exc:
+        raise ValueError("path must begin with a valid date: YYYY/MM/DD") from exc
+    match = TIME_INTERVAL.fullmatch(fields["time"])
+    if not match:
+        raise ValueError("time must be HH:MM or HH:MM–HH:MM")
+    try:
+        start = dt.datetime.combine(date, dt.time.fromisoformat(match.group(1)), tzinfo=STOCKHOLM)
+        end = (dt.datetime.combine(date, dt.time.fromisoformat(match.group(2)), tzinfo=STOCKHOLM)
+               if match.group(2) else None)
+    except ValueError as exc:
+        raise ValueError("time must use valid 24-hour values") from exc
+    if end and end <= start:
+        raise ValueError("the end time must be after the start time")
     parsed = urlparse(fields["url"])
     if parsed.scheme != "https" or not parsed.netloc:
         raise ValueError("url must be an absolute https URL")

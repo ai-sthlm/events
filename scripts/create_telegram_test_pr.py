@@ -74,7 +74,7 @@ def main() -> int:
                 (
                     "---",
                     f"title: {title}",
-                    f"start: {start.isoformat()}",
+                    f"time: {start:%H:%M}",
                     "venue: Stockholm (test listing)",
                     f"url: https://example.com/{slug}",
                     "tags: [test]",

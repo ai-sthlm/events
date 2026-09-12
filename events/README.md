@@ -1,8 +1,8 @@
 # Event data
 
-Each file here is one event. Put it at `events/YYYY/MM/DD/slug.md`, using the local date of its `start` time. Event files use a small metadata header followed by a Markdown body.
+Each file here is one event. Put it at `events/YYYY/MM/DD/slug.md`; the directory date is the event date. Event files use a small metadata header followed by a Markdown body.
 
-Required fields: `title`, `start` (an ISO 8601 date/time with offset, e.g. `2026-10-15T18:00:00+02:00`), `venue`, and public `https://` `url`.
+Required fields: `title`, `time`, `venue`, and public `https://` `url`. `time` uses Stockholm local time and is either `HH:MM` or a same-day interval such as `18:00–20:30`.
 
 Optional header fields: `end`, `address`, `organizer`, and `tags` (an inline list such as `[meetup, llms]`). `venue` is the physical place name; use `address` for its street address and `organizer` for the hosting organization.
 
@@ -11,7 +11,7 @@ Put metadata between opening and closing `---` lines. The text after the closing
 ```md
 ---
 title: Practical RAG evening
-start: 2026-11-04T18:00:00+01:00
+time: 18:00–20:30
 venue: Tekniska museet
 address: Museivägen 7, Stockholm
 organizer: Stockholm AI community

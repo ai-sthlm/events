@@ -8,7 +8,7 @@ The calendar covers public AI events held in the Stockholm area, plus online eve
 
 ## What we record
 
-Each listing has a title, local start time, venue, canonical event URL, and—when supplied—an end time, street address, organizer, tags, and a Markdown description. Time is recorded with an ISO 8601 UTC offset so an event remains unambiguous across daylight saving time.
+Each listing has a title, Stockholm-local time, venue, canonical event URL, and—when supplied—an address, organizer, tags, and a Markdown description. The event date comes from its directory path, and Stockholm daylight saving time is applied automatically.
 
 ## Directory structure
 
@@ -66,8 +66,8 @@ For a local preview, run `make serve` and open <http://localhost:8000>. This use
 - The generator uses Python 3.12 and the standard library only: no packages, JavaScript build step, database, or hosted CMS.
 - `templates/index.html` is a trusted site template. The builder replaces its sole `$EVENTS` placeholder with escaped event cards; do not add other `$` placeholders.
 - Event files are deliberately a **small flat YAML subset**, not general YAML. This makes dependency-free validation possible. Keep every value on one line and follow the format in `events/README.md`.
-- Submit events with a public HTTPS registration/details link and a start time that includes a UTC offset. Use the local Stockholm offset applicable on the event date (`+01:00` or `+02:00`).
-- One event per file. Use `events/YYYY/MM/DD/short-event-name.md`, with directories matching the local `start` date, and do not edit unrelated event records.
+- Submit events with a public HTTPS registration/details link and a Stockholm-local time (`HH:MM` or `HH:MM–HH:MM`).
+- One event per file. Use `events/YYYY/MM/DD/short-event-name.md`, with directories supplying the local event date, and do not edit unrelated event records.
 - Event descriptions are Markdown bodies rendered in the browser with `marked`. Raw HTML is not rendered.
 - GitHub Pages must be enabled in repository settings with **GitHub Actions** as its source before deployment can publish.
 
@@ -75,7 +75,7 @@ For a local preview, run `make serve` and open <http://localhost:8000>. This use
 
 1. Add events only after confirming them on the organizer’s official site or registration page.
 2. Prefer the organizer’s own URL for details, registration, location, and schedule.
-3. Use the announced local time and confirm the relevant Stockholm offset (`+01:00` or `+02:00`).
+3. Use the announced Stockholm-local time and place the file under the matching local date.
 4. Update or remove an event when the organizer changes its details or cancels it.
 5. If a lead cannot yet be verified, do not add it to the published calendar.
 

@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import html
 import json
 import os
 import subprocess
@@ -42,8 +43,8 @@ def event_message(event: dict[str, object]) -> str:
     end = event["end_dt"]
     if end is not None:
         when += "–" + end.strftime("%H:%M")
-    return "\n".join(str(event[field]) for field in ("title",)) + "\n\n" + "\n".join(
-        (when, str(event["venue"]), str(event["url"]))
+    return "<b>" + html.escape(str(event["title"])) + "</b>\n\n" + "\n".join(
+        html.escape(value) for value in (when, str(event["venue"]), str(event["url"]))
     )
 
 
@@ -51,7 +52,7 @@ def send_message(token: str, message: str) -> None:
     """Post one plain-text message to the configured Telegram channel."""
     request = Request(
         f"https://api.telegram.org/bot{token}/sendMessage",
-        data=json.dumps({"chat_id": CHAT_ID, "text": message}).encode(),
+        data=json.dumps({"chat_id": CHAT_ID, "text": message, "parse_mode": "HTML"}).encode(),
         headers={"Content-Type": "application/json"},
         method="POST",
     )
