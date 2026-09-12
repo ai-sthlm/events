@@ -1,7 +1,7 @@
 :root { color-scheme: dark; --bg: #07121c; --text: #edf4f7; --muted: #a2b7c4; --line: #263744; --accent: #9ceaff; --gold: #f4d795; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 1rem/1.6 system-ui, sans-serif; }
-body::before { content: ""; position: absolute; z-index: -1; inset: 0 0 auto; height: 660px; background: linear-gradient(180deg, transparent 65%, var(--bg)), url("https://ai-sthlm.github.io/assets/ai-sthlm.jpg") center 85px / auto 570px no-repeat; pointer-events: none; }
+body::before { content: ""; position: absolute; z-index: -1; inset: 0 0 auto; height: 660px; background: linear-gradient(180deg, transparent 65%, var(--bg)), url("https://ai-sthlm.github.io/assets/ai-sthlm.svg") center 85px / auto 570px no-repeat; pointer-events: none; }
 .shell { width: min(100% - 64px, 1080px); margin: auto; }
 a { color: inherit; text-decoration: none; }
 a:hover { color: var(--accent); }
