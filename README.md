@@ -52,10 +52,10 @@ To test an announcement end-to-end, run:
 python3 scripts/create_telegram_test_pr.py
 ```
 
-It requires an authenticated GitHub CLI (`gh auth login`), creates a uniquely
-named branch and disposable test event, validates and pushes it, creates a pull
-request, and opens that pull request in your browser. Merge the PR to send the
-test announcement; remove the generated test event afterward.
+It creates a uniquely named branch and disposable test event, validates and
+pushes it, then opens GitHub's pre-filled pull-request form in your browser.
+Review the form and submit the pull request. Merge it to send the test
+announcement; remove the generated test event afterward.
 
 Shared images are maintained and published in [ai-sthlm/assets](https://github.com/ai-sthlm/assets). The stylesheet loads the skyline from its GitHub Pages URL; images are not bundled into this site's build.
 

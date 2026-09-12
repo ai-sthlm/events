@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Create and open a PR for a disposable Telegram-announcement test event.
+"""Create and open a PR form for a disposable Telegram-announcement test event.
 
-Requires an authenticated GitHub CLI (``gh auth login``), a clean working tree,
-and permission to push branches to the ``origin`` repository.
+Requires a clean working tree and permission to push branches to the ``origin``
+GitHub repository. No Python packages or GitHub CLI are needed.
 """
 
 from __future__ import annotations
@@ -42,10 +42,21 @@ def ensure_clean_worktree() -> None:
         raise RuntimeError("Working tree is not clean; commit or stash changes before running this script.")
 
 
+def pull_request_form_url(branch: str) -> str:
+    """Build GitHub's pre-filled pull-request form URL from the origin remote."""
+    remote = run("git", "remote", "get-url", "origin", capture_output=True).removesuffix(".git")
+    if remote.startswith("git@github.com:"):
+        repository = remote.removeprefix("git@github.com:")
+    elif remote.startswith("https://github.com/"):
+        repository = remote.removeprefix("https://github.com/")
+    else:
+        raise RuntimeError("The origin remote must point to a GitHub repository.")
+    return f"https://github.com/{repository}/compare/main...{branch}?expand=1"
+
+
 def main() -> int:
     try:
         ensure_clean_worktree()
-        run("gh", "auth", "status")
         run("git", "switch", "main")
         run("git", "pull", "--ff-only", "origin", "main")
 
@@ -77,25 +88,12 @@ def main() -> int:
         run("git", "add", str(event_path.relative_to(ROOT)))
         run("git", "commit", "-m", "Add Telegram announcement test event")
         run("git", "push", "--set-upstream", "origin", branch)
-        pr_url = run(
-            "gh",
-            "pr",
-            "create",
-            "--base",
-            "main",
-            "--head",
-            branch,
-            "--title",
-            "Test Telegram event announcement",
-            "--body",
-            "Merge this disposable event to verify the Telegram announcement workflow. Remove the event afterward.",
-            capture_output=True,
-        )
+        pr_url = pull_request_form_url(branch)
     except (OSError, RuntimeError) as error:
         print(f"Could not create test PR: {error}", file=sys.stderr)
         return 1
 
-    print(f"Created pull request: {pr_url}")
+    print(f"Open this pre-filled pull-request form: {pr_url}")
     if not webbrowser.open(pr_url):
         print("Could not open a browser automatically; open the URL above.", file=sys.stderr)
     return 0
