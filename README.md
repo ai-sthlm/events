@@ -46,6 +46,17 @@ The channel is configured as `@ai_sthlm` in the workflow. The bot must be an
 administrator there with permission to post messages. Edits to existing records
 do not produce an announcement.
 
+To test an announcement end-to-end, run:
+
+```sh
+python3 scripts/create_telegram_test_pr.py
+```
+
+It creates a uniquely named branch and disposable test event, validates and
+pushes it, then opens GitHub's pre-filled pull-request form in your browser.
+Review the form and submit the pull request. Merge it to send the test
+announcement; remove the generated test event afterward.
+
 Shared images are maintained and published in [ai-sthlm/assets](https://github.com/ai-sthlm/assets). The stylesheet loads the skyline from its GitHub Pages URL; images are not bundled into this site's build.
 
 For a local preview, run `make serve` and open <http://localhost:8000>. This uses Python’s built-in HTTP server.
