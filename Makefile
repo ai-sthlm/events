@@ -9,3 +9,7 @@ check:
 serve: build
 	# http://localhost:8000/
 	python3 -m http.server 8000 --directory dist
+
+
+t:
+	python3 scripts/test_telegram.py

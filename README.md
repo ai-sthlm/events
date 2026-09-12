@@ -34,6 +34,18 @@ python3 build.py
 
 The second command writes the disposable preview to `dist/index.html`.
 
+## Telegram announcements
+
+After a new event record is merged into `main`, the GitHub Actions workflow posts
+one announcement to Telegram. Configure this repository Actions secret before
+enabling it:
+
+- `TELEGRAM_BOT_TOKEN`: the token issued by BotFather.
+
+The channel is configured as `@ai_sthlm` in the workflow. The bot must be an
+administrator there with permission to post messages. Edits to existing records
+do not produce an announcement.
+
 Shared images are maintained and published in [ai-sthlm/assets](https://github.com/ai-sthlm/assets). The stylesheet loads the skyline from its GitHub Pages URL; images are not bundled into this site's build.
 
 For a local preview, run `make serve` and open <http://localhost:8000>. This uses Python’s built-in HTTP server.

@@ -1,0 +1,80 @@
+name: Announce new events on Telegram
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "events/**"
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the merged commit
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Post newly added events
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          python3 - <<'PY'
+          import json
+          import os
+          import subprocess
+          import sys
+          from pathlib import Path
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+
+          from build import event_from
+
+
+          token = os.environ["TELEGRAM_BOT_TOKEN"]
+          chat_id = "@ai_sthlm"
+          before = os.environ["BEFORE"]
+          after = os.environ["AFTER"]
+          if not token:
+              raise RuntimeError("Set TELEGRAM_BOT_TOKEN as a repository secret.")
+
+          added_files = subprocess.check_output(
+              ["git", "diff", "--name-only", "--diff-filter=A", before, after, "--", "events"],
+              text=True,
+          ).splitlines()
+          event_paths = [
+              path for path in added_files
+              if Path(path).suffix in {".yaml", ".md"}
+              and len(Path(path).relative_to("events").parent.parts) == 3
+          ]
+
+          if not event_paths:
+              print("No new event records to announce.")
+              sys.exit(0)
+
+          for filename in event_paths:
+              event = event_from(Path(filename))
+              message = "New Stockholm AI event 🎉\n\n" + "\n".join(
+                  str(event[field]) for field in ("title", "start", "venue", "url")
+              )
+              request = Request(
+                  f"https://api.telegram.org/bot{token}/sendMessage",
+                  data=json.dumps({"chat_id": chat_id, "text": message}).encode(),
+                  headers={"Content-Type": "application/json"},
+                  method="POST",
+              )
+              try:
+                  with urlopen(request, timeout=15) as response:
+                      result = json.load(response)
+              except (HTTPError, URLError) as error:
+                  raise RuntimeError(f"Telegram request failed for {filename}: {error}") from error
+              if not result.get("ok"):
+                  raise RuntimeError(f"Telegram rejected {filename}: {result}")
+              print(f"Announced {filename}.")
+          PY
