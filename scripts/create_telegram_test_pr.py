@@ -64,7 +64,7 @@ def main() -> int:
         start = (now + dt.timedelta(days=21)).replace(hour=18, minute=0, second=0, microsecond=0)
         slug = f"telegram-announcement-test-{now:%Y%m%d-%H%M%S}"
         branch = f"codex/{slug}"
-        event_path = ROOT / "events" / f"{start:%Y}" / f"{start:%m}" / f"{start:%d}" / f"{slug}.yaml"
+        event_path = ROOT / "events" / f"{start:%Y}" / f"{start:%m}" / f"{start:%d}" / f"{slug}.md"
         title = f"Telegram announcement test event ({now:%Y-%m-%d})"
 
         run("git", "switch", "-c", branch)
@@ -72,12 +72,15 @@ def main() -> int:
         event_path.write_text(
             "\n".join(
                 (
+                    "---",
                     f"title: {title}",
                     f"start: {start.isoformat()}",
                     "venue: Stockholm (test listing)",
                     f"url: https://example.com/{slug}",
                     "tags: [test]",
-                    "description: Disposable test event for the Telegram announcement workflow.",
+                    "---",
+                    "",
+                    "Disposable test event for the Telegram announcement workflow.",
                     "",
                 )
             ),

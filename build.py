@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate event records and render the dependency-free Stockholm AI events site."""
+"""Validate Markdown event records and render the Stockholm AI events site."""
 from __future__ import annotations
 
 import argparse
@@ -15,7 +15,7 @@ from urllib.parse import urlparse
 ROOT = Path(__file__).resolve().parent
 EVENTS, OUTPUT, TEMPLATE, STYLESHEET = ROOT / "events", ROOT / "dist", ROOT / "templates" / "index.html", ROOT / "templates" / "style.css"
 REQUIRED = ("title", "start", "venue", "url")
-ALLOWED = set(REQUIRED) | {"end", "address", "tags", "description"}
+ALLOWED = set(REQUIRED) | {"end", "address", "organizer", "tags"}
 KEY = re.compile(r"^([a-z]+):[ ]*(.*)$")
 
 
@@ -44,8 +44,6 @@ def parse_fields(text: str, path: Path) -> dict[str, str]:
             raise ValueError(f"line {number}: duplicate or empty `{key}`")
         fields[key] = value
     if body:
-        if "description" in fields:
-            raise ValueError("use Markdown body or description, not both")
         fields["description"] = body
     return fields
 
@@ -92,16 +90,19 @@ def render_event(event: dict[str, object]) -> str:
     location = esc(event["venue"])
     if event.get("address"):
         location += ", " + esc(event["address"])
+    organizer = f'<p class="organizer">Organized by {esc(event["organizer"])}</p>' if event.get("organizer") else ""
     tags = "".join(f"<li>{esc(tag)}</li>" for tag in event["tags_list"])
-    description = f"<p>{esc(event['description'])}</p>" if event.get("description") else ""
+    # Markdown remains escaped text in the generated HTML. marked renders it
+    # in the browser after page load, so event content cannot alter the shell.
+    description = (f'<div class="event-description markdown-source">{esc(event["description"])}</div>'
+                   if event.get("description") else "")
     return f'''<article class="event"><div class="date-tile" aria-hidden="true"><span>{start.strftime('%b')}</span><strong>{start.day:02d}</strong><span>{start.year}</span></div>
 <div class="event-details"><p class="when">{when}</p><h3><a href="{esc(event['url'])}">{esc(event['title'])} <span aria-hidden="true">↗</span></a></h3>
-<p>{location}</p>{description}<ul class="tags">{tags}</ul></div></article>'''
+<p>{location}</p>{organizer}{description}<ul class="tags">{tags}</ul></div></article>'''
 
 
 def build(check_only: bool = False) -> None:
-    paths = sorted(path for path in [*EVENTS.rglob("*.yaml"), *EVENTS.rglob("*.md")]
-                   if path.name.lower() != "readme.md")
+    paths = sorted(path for path in EVENTS.rglob("*.md") if path.name.lower() != "readme.md")
     events, errors = [], []
     for path in paths:
         try:

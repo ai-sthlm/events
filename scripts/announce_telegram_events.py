@@ -30,7 +30,7 @@ def added_event_paths(before: str, after: str) -> list[Path]:
     return [
         Path(filename).resolve()
         for filename in files
-        if Path(filename).suffix in {".yaml", ".md"}
+        if Path(filename).suffix == ".md"
         and len(Path(filename).relative_to("events").parent.parts) == 3
     ]
 

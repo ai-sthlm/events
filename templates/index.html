@@ -30,5 +30,30 @@
     </main>
     <footer></footer>
   </div>
+  <script src="https://ai-sthlm.github.io/assets/marked.min.js"></script>
+  <script>
+    (() => {
+      const escapeHtml = (text) => text.replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      })[character]);
+      const renderer = new marked.Renderer();
+      // Event bodies are Markdown, not arbitrary HTML.
+      renderer.html = (token) => escapeHtml(token.raw);
+      renderer.link = function (token) {
+        try {
+          const protocol = new URL(token.href, document.baseURI).protocol;
+          if (!['http:', 'https:', 'mailto:'].includes(protocol)) return this.parser.parseInline(token.tokens);
+        } catch (_) {
+          return this.parser.parseInline(token.tokens);
+        }
+        const title = token.title ? ' title="' + escapeHtml(token.title) + '"' : '';
+        return '<a href="' + escapeHtml(token.href) + '"' + title + ' rel="noopener noreferrer">' + this.parser.parseInline(token.tokens) + '</a>';
+      };
+      document.querySelectorAll('.markdown-source').forEach((element) => {
+        element.classList.remove('markdown-source');
+        element.innerHTML = marked.parse(element.textContent, { renderer, mangle: false, headerIds: false });
+      });
+    })();
+  </script>
 </body>
 </html>

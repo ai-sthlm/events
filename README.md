@@ -8,12 +8,12 @@ The calendar covers public AI events held in the Stockholm area, plus online eve
 
 ## What we record
 
-Each listing has a title, local start time, venue, canonical event URL, and—when supplied—an end time, street address, tags, and short description. Time is recorded with an ISO 8601 UTC offset so an event remains unambiguous across daylight saving time.
+Each listing has a title, local start time, venue, canonical event URL, and—when supplied—an end time, street address, organizer, tags, and a Markdown description. Time is recorded with an ISO 8601 UTC offset so an event remains unambiguous across daylight saving time.
 
 ## Directory structure
 
 ```
-events/YYYY/MM/DD/   # one submitted event per .yaml or .md file
+events/YYYY/MM/DD/   # one submitted event per .md file
   README.md           # data format and example
 build.py              # standard-library validator and static-site generator
 templates/index.html  # trusted page shell; uses the $EVENTS placeholder
@@ -23,7 +23,7 @@ dist/                 # generated site, not committed
 
 ## Contributing
 
-Add one file per event under [`events/`](events/). Files can be a constrained `.yaml` record or a Markdown record with front matter; see the [event-data guide](events/README.md) for the exact format. The validation step runs on every pull request. A merge to the default branch (`main` or `master`) generates `dist/index.html` and deploys it to GitHub Pages.
+Add one Markdown file per event under [`events/`](events/). It has a constrained metadata header and a Markdown body; see the [event-data guide](events/README.md) for the exact format. The validation step runs on every pull request. A merge to the default branch (`main` or `master`) generates `dist/index.html` and deploys it to GitHub Pages.
 
 Run the same checks locally with only a standard Python installation:
 
@@ -67,8 +67,8 @@ For a local preview, run `make serve` and open <http://localhost:8000>. This use
 - `templates/index.html` is a trusted site template. The builder replaces its sole `$EVENTS` placeholder with escaped event cards; do not add other `$` placeholders.
 - Event files are deliberately a **small flat YAML subset**, not general YAML. This makes dependency-free validation possible. Keep every value on one line and follow the format in `events/README.md`.
 - Submit events with a public HTTPS registration/details link and a start time that includes a UTC offset. Use the local Stockholm offset applicable on the event date (`+01:00` or `+02:00`).
-- One event per file. Use `events/YYYY/MM/DD/short-event-name.yaml`, with directories matching the local `start` date, and do not edit unrelated event records.
-- The site copies submitted descriptions as plain text; HTML and Markdown formatting are intentionally not rendered.
+- One event per file. Use `events/YYYY/MM/DD/short-event-name.md`, with directories matching the local `start` date, and do not edit unrelated event records.
+- Event descriptions are Markdown bodies rendered in the browser with `marked`. Raw HTML is not rendered.
 - GitHub Pages must be enabled in repository settings with **GitHub Actions** as its source before deployment can publish.
 
 ## Inclusion and verification
